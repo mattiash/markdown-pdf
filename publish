@@ -12,7 +12,7 @@ fi
 git clean -fdx
 npm install
 npm run lint
-npm run test
+npm run build
 
 # List files that will be included by running npm pack
 # and then listing all files that it includes in the tar.
