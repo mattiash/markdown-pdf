@@ -3,6 +3,7 @@ import * as puppeteer from 'puppeteer'
 import { createHttpServer } from '@mattiash/http'
 import { join, dirname, resolve } from 'path'
 const { Remarkable } = require('remarkable')
+const mime = require('mime-types')
 
 import * as yargs from 'yargs'
 
@@ -69,15 +70,14 @@ writeFileSync('index.html', html)
 
 let srv = createHttpServer((req, res) => {
     let file: string
+    ;[, file] = req.url.match(/\/@mattiash\/markdown-pdf\/([^/]*)/) || []
     if (req.url === '/') {
         res.writeHead(200, {
             'Content-Length': Buffer.byteLength(html),
             'Content-Type': 'text/html',
         })
         res.end(html)
-    } else if (
-        ([, file] = req.url.match(/\/@mattiash\/markdown-pdf\/([^/]*)/) || [])
-    ) {
+    } else if (file) {
         let filename: string = undefined
         switch (file) {
             case 'github-markdown.css':
@@ -100,6 +100,7 @@ let srv = createHttpServer((req, res) => {
             })
             res.end(content)
         } else {
+            console.log('Internal file not found', file)
             res.writeHead(200, {
                 'Content-Length': 0,
                 'Content-Type': 'text/css',
@@ -108,6 +109,19 @@ let srv = createHttpServer((req, res) => {
         }
     } else {
         // Return files referenced by markdown
+        const filename = join(basePath, req.url)
+        try {
+            const content = readFileSync(filename)
+            res.writeHead(200, {
+                'Content-Length': Buffer.byteLength(content),
+                'Content-Type': mime.contentType(filename),
+            })
+            res.end(content)
+        } catch (e) {
+            console.log('Not found', filename)
+            res.writeHead(404)
+            res.end()
+        }
     }
 })
 

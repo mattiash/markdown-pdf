@@ -28,6 +28,7 @@
         "@mattiash/http": "^1.0.2",
         "@types/puppeteer": "^1.19.1",
         "github-markdown-css": "^3.0.1",
+        "mime-types": "^2.1.24",
         "puppeteer": "^1.19.0",
         "remarkable": "^2.0.0",
         "yargs": "^14.0.0"
