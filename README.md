@@ -43,7 +43,12 @@ with
 and keep track of x=1. Then replace *figure x* with figure 1. This can be done by pre-processing the markup.
 
 Add css to keep span.caption together with whatever comes before it.
+Will probably not work... Write a remarkable plugin and place caption before image instead?
 
 ## Git integration
 
 Replace **git:date** with the date of the last modification according to git.
+
+## Page breaks
+
+Convert --- to manual page-breaks by css for hr tag?
