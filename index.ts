@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { readFileSync, writeFileSync } from 'fs'
 import * as puppeteer from 'puppeteer'
 import { createHttpServer } from '@mattiash/http'
@@ -7,16 +9,30 @@ const mime = require('mime-types')
 
 import * as yargs from 'yargs'
 
+const argv = yargs
+    .usage('Usage: $0 <inputfile>')
+    .demandCommand(1)
+    .options({
+        style: { type: 'string', describe: 'Custom stylesheet' },
+        browser: {
+            type: 'boolean',
+            default: false,
+            describe: 'Show html in browser',
+        },
+        output: {
+            type: 'string',
+            describe: 'Output filename',
+            default: '<inputfile>.pdf',
+        },
+        paper: { type: 'string', default: 'A4', describe: 'Paper size' },
+    }).argv
+
 const absoluteFilename = resolve(process.argv[2])
 const basePath = dirname(absoluteFilename)
 const markdown = readFileSync(absoluteFilename).toString()
 
-const argv = yargs.options({
-    style: { type: 'string' },
-    browser: { type: 'boolean', default: false },
-    output: { type: 'string', default: absoluteFilename + '.pdf' },
-    paper: { type: 'string', default: 'A4' },
-}).argv
+argv.output =
+    argv.output === '<inputfile>.pdf' ? absoluteFilename + '.pdf' : argv.output
 
 const md = new Remarkable({
     html: true, // Enable HTML tags in source
@@ -90,7 +106,13 @@ let srv = createHttpServer((req, res) => {
                 filename = argv.style
         }
 
-        if (filename) {
+        if (file === 'style.css' && !argv.style) {
+            res.writeHead(200, {
+                'Content-Length': 0,
+                'Content-Type': 'text/css',
+            })
+            res.end()
+        } else if (filename) {
             const content = readFileSync(filename)
             res.writeHead(200, {
                 'Content-Length': Buffer.byteLength(content),
