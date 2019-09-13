@@ -50,4 +50,66 @@ h6:before {
     display: block;
     height: 100px;
     margin-bottom: -100px;
+    page-break-inside: avoid;
+}
+
+.markdown-body h3 {
+    page-break-inside: avoid;
+}
+.markdown-body h3::after {
+    content: '';
+    display: block;
+    height: 100px;
+    margin-bottom: -100px;
+    page-break-inside: avoid;
+}
+
+.markdown-body h4 {
+    page-break-inside: avoid;
+}
+.markdown-body h4::after {
+    content: '';
+    display: block;
+    height: 100px;
+    margin-bottom: -100px;
+    page-break-inside: avoid;
+}
+
+.markdown-body h5 {
+    page-break-inside: avoid;
+}
+.markdown-body h5 ::after {
+    content: '';
+    display: block;
+    height: 100px;
+    margin-bottom: -100px;
+    page-break-inside: avoid;
+}
+
+.markdown-body h6 {
+    page-break-inside: avoid;
+}
+.markdown-body h6 ::after {
+    content: '';
+    display: block;
+    height: 100px;
+    margin-bottom: -100px;
+    page-break-inside: avoid;
+}
+
+.markdown-body hr {
+    page-break-before: always;
+    height: 0;
+}
+
+.markdown-body p {
+    orphans: 3;
+    widows: 3;
+}
+
+.markdown-body::before {
+    display: none;
+}
+.markdown-body::after {
+    display: none;
 }

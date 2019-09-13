@@ -69,8 +69,7 @@ const html = `
 </html>`
 
 let srv = createHttpServer((req, res) => {
-    let file: string
-    ;[, file] = req.url.match(/\/@mattiash\/markdown-pdf\/([^/]*)/) || []
+    let [, file] = req.url.match(/\/@mattiash\/markdown-pdf\/([^/]*)/) || []
     if (req.url === '/') {
         res.writeHead(200, {
             'Content-Length': Buffer.byteLength(html),
@@ -92,7 +91,6 @@ let srv = createHttpServer((req, res) => {
         }
 
         if (filename) {
-            console.log('Fetching file', filename)
             const content = readFileSync(filename)
             res.writeHead(200, {
                 'Content-Length': Buffer.byteLength(content),
