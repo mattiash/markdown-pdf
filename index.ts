@@ -7,14 +7,16 @@ const mime = require('mime-types')
 
 import * as yargs from 'yargs'
 
-const argv = yargs.options({
-    style: { type: 'string' },
-    browser: { type: 'boolean', default: false },
-}).argv
-
 const absoluteFilename = resolve(process.argv[2])
 const basePath = dirname(absoluteFilename)
 const markdown = readFileSync(absoluteFilename).toString()
+
+const argv = yargs.options({
+    style: { type: 'string' },
+    browser: { type: 'boolean', default: false },
+    output: { type: 'string', default: absoluteFilename + '.pdf' },
+    paper: { type: 'string', default: 'A4' },
+}).argv
 
 const md = new Remarkable({
     html: true, // Enable HTML tags in source
@@ -65,8 +67,6 @@ const html = `
       </article>
     </body>
 </html>`
-
-writeFileSync('index.html', html)
 
 let srv = createHttpServer((req, res) => {
     let file: string
@@ -140,8 +140,8 @@ async function run() {
         const page = await browser.newPage()
         await page.goto(url, { waitUntil: 'networkidle0' })
         await page.pdf({
-            path: 'hn.pdf',
-            format: 'A4',
+            path: argv.output,
+            format: argv.paper as any,
             displayHeaderFooter: true,
             headerTemplate: '<div></div>',
             //     '<div id="header-template" style="font-size:10px !important; color:#808080; padding-left:10px"><span class="date"></span><span class="title"></span><span class="url"></span><span class="pageNumber"></span><span class="totalPages"></span></div>',
