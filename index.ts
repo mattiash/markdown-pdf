@@ -31,6 +31,8 @@ const absoluteFilename = resolve(process.argv[2])
 const basePath = dirname(absoluteFilename)
 const markdown = readFileSync(absoluteFilename).toString()
 
+const printcss = readFileSync(require.resolve('../print.css'))
+const githubcss = readFileSync(require.resolve('github-markdown-css'))
 argv.output =
     argv.output === '<inputfile>.pdf' ? absoluteFilename + '.pdf' : argv.output
 
@@ -93,27 +95,19 @@ let srv = createHttpServer((req, res) => {
         })
         res.end(html)
     } else if (file) {
-        let filename: string = undefined
+        let content: any
         switch (file) {
             case 'github-markdown.css':
-                filename =
-                    './node_modules/github-markdown-css/github-markdown.css'
+                content = githubcss
                 break
             case 'print.css':
-                filename = './print.css'
+                content = printcss
                 break
             case 'style.css':
-                filename = argv.style
+                content = argv.style ? readFileSync(argv.style) : ''
         }
 
-        if (file === 'style.css' && !argv.style) {
-            res.writeHead(200, {
-                'Content-Length': 0,
-                'Content-Type': 'text/css',
-            })
-            res.end()
-        } else if (filename) {
-            const content = readFileSync(filename)
+        if (content !== undefined) {
             res.writeHead(200, {
                 'Content-Length': Buffer.byteLength(content),
                 'Content-Type': 'text/css',
