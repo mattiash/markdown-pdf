@@ -1,12 +1,3 @@
-.markdown-body {
-    font-size: 12pt;
-    font-family: 'Times New Roman', Times, serif;
-}
-
-.markdown-body h2 {
-    margin-top: 80pt;
-}
-
 h1 {
     counter-reset: h2counter;
 }

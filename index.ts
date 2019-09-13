@@ -2,8 +2,14 @@ import { readFileSync, writeFileSync } from 'fs'
 import * as puppeteer from 'puppeteer'
 import { createHttpServer } from '@mattiash/http'
 import { join, dirname, resolve } from 'path'
-
 const { Remarkable } = require('remarkable')
+
+import * as yargs from 'yargs'
+
+const argv = yargs.options({
+    style: { type: 'string' },
+    browser: { type: 'boolean', default: false },
+}).argv
 
 const absoluteFilename = resolve(process.argv[2])
 const basePath = dirname(absoluteFilename)
@@ -40,6 +46,7 @@ const html = `
 
         <link rel="stylesheet" href="/@mattiash/markdown-pdf/github-markdown.css">
         <link rel="stylesheet" href="/@mattiash/markdown-pdf/print.css">
+        <link rel="stylesheet" href="/@mattiash/markdown-pdf/style.css">
 
         <style>
             .markdown-body {
@@ -71,17 +78,34 @@ let srv = createHttpServer((req, res) => {
     } else if (
         ([, file] = req.url.match(/\/@mattiash\/markdown-pdf\/([^/]*)/) || [])
     ) {
-        const filename =
-            file === 'github-markdown.css'
-                ? './node_modules/github-markdown-css/github-markdown.css'
-                : './print.css'
-        console.log('Fetching file', filename)
-        const content = readFileSync(filename)
-        res.writeHead(200, {
-            'Content-Length': Buffer.byteLength(content),
-            'Content-Type': 'text/css',
-        })
-        res.end(content)
+        let filename: string = undefined
+        switch (file) {
+            case 'github-markdown.css':
+                filename =
+                    './node_modules/github-markdown-css/github-markdown.css'
+                break
+            case 'print.css':
+                filename = './print.css'
+                break
+            case 'style.css':
+                filename = argv.style
+        }
+
+        if (filename) {
+            console.log('Fetching file', filename)
+            const content = readFileSync(filename)
+            res.writeHead(200, {
+                'Content-Length': Buffer.byteLength(content),
+                'Content-Type': 'text/css',
+            })
+            res.end(content)
+        } else {
+            res.writeHead(200, {
+                'Content-Length': 0,
+                'Content-Type': 'text/css',
+            })
+            res.end()
+        }
     } else {
         // Return files referenced by markdown
     }
@@ -93,28 +117,33 @@ async function run() {
         address.family === 'IPv6'
             ? `http://[${address.address}]:${address.port}/`
             : `http://${address.address}:${address.port}/`
-    console.log(`Listening on ${url}`)
-    const browser = await puppeteer.launch()
-    const page = await browser.newPage()
-    await page.goto(url)
-    await page.pdf({
-        path: 'hn.pdf',
-        format: 'A4',
-        displayHeaderFooter: true,
-        headerTemplate: '<div></div>',
-        //     '<div id="header-template" style="font-size:10px !important; color:#808080; padding-left:10px"><span class="date"></span><span class="title"></span><span class="url"></span><span class="pageNumber"></span><span class="totalPages"></span></div>',
-        footerTemplate:
-            '<div id="footer-template" style="padding-bottom: 10px; font-family: Arial, Helvetica, sans-serif; width: 100%; padding-right: 30px; font-size: 8pt !important; text-align: right;" ><span class="pageNumber"></span></div>',
-        // '<div id="footer-template" style="background-color: #aaa; font-size:10px !important; color:#808080; padding-left:10px"><span class="pageNumber"></span></div>',
-        margin: {
-            top: '50px',
-            bottom: '70px',
-            right: '30px',
-            left: '30px',
-        },
-    })
-    await browser.close()
-    await srv.closeAsync()
+
+    if (argv.browser) {
+        console.log(`Open ${url} in a browser to see output`)
+        console.log('Ctrl-c to exit')
+    } else {
+        const browser = await puppeteer.launch()
+        const page = await browser.newPage()
+        await page.goto(url, { waitUntil: 'networkidle0' })
+        await page.pdf({
+            path: 'hn.pdf',
+            format: 'A4',
+            displayHeaderFooter: true,
+            headerTemplate: '<div></div>',
+            //     '<div id="header-template" style="font-size:10px !important; color:#808080; padding-left:10px"><span class="date"></span><span class="title"></span><span class="url"></span><span class="pageNumber"></span><span class="totalPages"></span></div>',
+            footerTemplate:
+                '<div id="footer-template" style="padding-bottom: 10px; font-family: Arial, Helvetica, sans-serif; width: 100%; padding-right: 30px; font-size: 8pt !important; text-align: right;" ><span class="pageNumber"></span></div>',
+            // '<div id="footer-template" style="background-color: #aaa; font-size:10px !important; color:#808080; padding-left:10px"><span class="pageNumber"></span></div>',
+            margin: {
+                top: '50px',
+                bottom: '70px',
+                right: '30px',
+                left: '30px',
+            },
+        })
+        await browser.close()
+        await srv.closeAsync()
+    }
 }
 
 run()
