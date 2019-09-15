@@ -8,6 +8,7 @@ const { Remarkable } = require('remarkable')
 const mime = require('mime-types')
 
 import * as yargs from 'yargs'
+import { execSync } from 'child_process'
 
 const argv = yargs
     .usage('Usage: $0 <inputfile>')
@@ -29,7 +30,17 @@ const argv = yargs
 
 const absoluteFilename = resolve(process.argv[2])
 const basePath = dirname(absoluteFilename)
-const markdown = readFileSync(absoluteFilename).toString()
+let markdown = readFileSync(absoluteFilename).toString()
+
+markdown = markdown.replace(
+    /@mattiash\/markdown-pdf\/git:lastUpdated/g,
+    () =>
+        execSync(
+            `cd ${basePath} ; git log --format=format:%ai -n 1 -- ${absoluteFilename}`,
+        )
+            .toString()
+            .split(' ')[0],
+)
 
 const printcss = readFileSync(require.resolve('../print.css'))
 const githubcss = readFileSync(require.resolve('github-markdown-css'))

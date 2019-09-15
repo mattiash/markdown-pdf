@@ -19,3 +19,9 @@ Produces a README.md.pdf in the same directory as README.md
 --paper <size>      Set the paper-size. Default A4. See puppeteer documentation for page.pdf()
 ```
 
+## Macros
+
+### git:lastUpdated
+
+Will replace the string `@mattiash/markdown-pdf/git:lastUpdated` with
+the date that the file was last updated according to `git log`.
