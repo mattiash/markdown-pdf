@@ -33,7 +33,7 @@ const basePath = dirname(absoluteFilename)
 let markdown = readFileSync(absoluteFilename).toString()
 
 markdown = markdown.replace(
-    /@mattiash\/markdown-pdf\/git:lastUpdated/g,
+    /@git:lastUpdated/g,
     () =>
         execSync(
             `cd ${basePath} ; git log --format=format:%ai -n 1 -- ${absoluteFilename}`,

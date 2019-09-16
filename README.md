@@ -23,5 +23,5 @@ Produces a README.md.pdf in the same directory as README.md
 
 ### git:lastUpdated
 
-Will replace the string `@mattiash/markdown-pdf/git:lastUpdated` with
+Will replace the string `@git:lastUpdated` with
 the date that the file was last updated according to `git log`.
