@@ -113,3 +113,21 @@ h6:before {
 .markdown-body::after {
     display: none;
 }
+
+.markdown-body .captioned {
+    padding-right: 1em;
+    padding-left: 1em;
+}
+
+.markdown-body .caption {
+    page-break-inside: avoid;
+    margin-bottom: 2em;
+}
+
+.markdown-body .caption {
+    font-style: italic;
+}
+
+.markdown-body .caption span {
+    font-weight: bold;
+}

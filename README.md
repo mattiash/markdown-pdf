@@ -25,3 +25,12 @@ Produces a README.md.pdf in the same directory as README.md
 
 Will replace the string `@git:lastUpdated` with
 the date that the file was last updated according to `git log`.
+
+### def
+
+Will replace a string `@def Figure X This is the caption`
+with a proper caption and wrap the caption and the element above it
+in a div to keep them together and simplify styling.
+The syntax is `@def <type> <id> <text>`.
+Replaces the id with an incrementing counter per type.
+

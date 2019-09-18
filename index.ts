@@ -32,15 +32,32 @@ const absoluteFilename = resolve(process.argv[2])
 const basePath = dirname(absoluteFilename)
 let markdown = readFileSync(absoluteFilename).toString()
 
-markdown = markdown.replace(
-    /@git:lastUpdated/g,
-    () =>
-        execSync(
-            `cd ${basePath} ; git log --format=format:%ai -n 1 -- ${absoluteFilename}`,
-        )
-            .toString()
-            .split(' ')[0],
-)
+// Map each reference type to an array of references
+const refMap = new Map()
+
+markdown = markdown
+    .replace(
+        /@git:lastUpdated/g,
+        () =>
+            execSync(
+                `cd ${basePath} ; git log --format=format:%ai -n 1 -- ${absoluteFilename}`,
+            )
+                .toString()
+                .split(' ')[0],
+    )
+    .replace(
+        /@def\s+(\S+)\s+([a-zA-Z0-9]+)(.*)/g,
+        (_: string, type: string, id: string, caption: string) => {
+            const lctype = type.toLowerCase()
+            let ref = refMap.get(lctype)
+            if (!ref) {
+                ref = []
+                refMap.set(lctype, ref)
+            }
+            ref.push(id)
+            return `<div class="caption ${lctype}"><span>${type} ${ref.length}</span>${caption}</div>`
+        },
+    )
 
 const printcss = readFileSync(require.resolve('../print.css'))
 const githubcss = readFileSync(require.resolve('github-markdown-css'))
@@ -89,8 +106,21 @@ const html = `
 		        padding: 45px;
 	        }
         </style>
+        <script type="text/javascript">
+            function wrapCaptions() {
+                let captions = document.getElementsByClassName('caption')
+                for( let i=0; i < captions.length; i++ ) {
+                    const caption = captions[i]
+                    let e = document.createElement('div')
+                    e.setAttribute('class',caption.getAttribute('class').replace('caption', 'captioned'))
+                    e.appendChild(caption.previousElementSibling)
+                    caption.parentElement.insertBefore(e,caption)
+                    e.appendChild(caption)
+                }
+            }
+        </script>
     </head>
-    <body>
+    <body onload="wrapCaptions()">
       <article class="markdown-body">
       ${md.render(markdown)}
       </article>
