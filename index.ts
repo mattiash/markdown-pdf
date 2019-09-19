@@ -33,7 +33,7 @@ const basePath = dirname(absoluteFilename)
 let markdown = readFileSync(absoluteFilename).toString()
 
 // Map each reference type to an array of references
-const refMap = new Map()
+const refMap = new Map<string, string[]>()
 
 markdown = markdown
     .replace(
@@ -56,6 +56,16 @@ markdown = markdown
             }
             ref.push(id)
             return `<div class="caption ${lctype}"><span>${type} ${ref.length}</span>${caption}</div>`
+        },
+    )
+    .replace(
+        /@ref\s+(\S+)\s+([a-zA-Z0-9]+)/g,
+        (_: string, type: string, id: string) => {
+            const lctype = type.toLowerCase()
+            const ref = refMap.get(lctype) || []
+            const documentId = ref.indexOf(id) + 1
+            return `<span class="ref ${lctype}">${type} ${documentId ||
+                'Error!'}</span>`
         },
     )
 

@@ -34,3 +34,7 @@ in a div to keep them together and simplify styling.
 The syntax is `@def <type> <id> <text>`.
 Replaces the id with an incrementing counter per type.
 
+### ref
+
+Will replace a string `@ref Figure X` with the id used when `@def Figure X` was replaced.
+The type of the reference is case insensitive, but case will be preserved in the replaced text. I.e. `@ref Figure X` will be replaced with `Figure 1` and `@ref figure X` will be replaced with `figure 1`.

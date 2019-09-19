@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 -   Support for captions with @def macro
+-   Support for references to captions with @ref macro
+-   Fix mimetype lookups
 
 ## [1.1.0] 2019-09-16
 
