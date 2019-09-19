@@ -135,6 +135,9 @@ let srv = createHttpServer((req, res) => {
             'Content-Type': 'text/html',
         })
         res.end(html)
+    } else if (req.url === '/favicon.ico') {
+        res.writeHead(404)
+        res.end()
     } else if (file) {
         let content: any
         switch (file) {
