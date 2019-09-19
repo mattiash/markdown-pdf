@@ -39,8 +39,10 @@ markdown = markdown
     .replace(
         /@git:lastUpdated/g,
         () =>
-            execSync(
-                `cd ${basePath} ; git log --format=format:%ai -n 1 -- ${absoluteFilename}`,
+            (
+                execSync(
+                    `cd ${basePath} ; git log --format=format:%ai -n 1 -- ${absoluteFilename}`,
+                ) || 'Error!'
             )
                 .toString()
                 .split(' ')[0],
@@ -118,6 +120,8 @@ const html = `
         </style>
         <script type="text/javascript">
             function wrapCaptions() {
+                // Wrap div.caption and the element before it in
+                // a div.captioned
                 let captions = document.getElementsByClassName('caption')
                 for( let i=0; i < captions.length; i++ ) {
                     const caption = captions[i]
@@ -127,6 +131,25 @@ const html = `
                     caption.parentElement.insertBefore(e,caption)
                     e.appendChild(caption)
                 }
+
+                // Wrap div.captioned and any heading before it in
+                // a div.keeptogether
+                let captioned = document.getElementsByClassName('captioned')
+                for( let i=0; i < captioned.length; i++ ) {
+                    const elem = captioned[i]
+                    if(
+                        elem.previousElementSibling
+                        && ['H2','H3','H4','H5','H6'].includes(elem.previousElementSibling.tagName)
+                    ) {
+                        let e = document.createElement('div')
+                        e.setAttribute('class','keeptogether')
+                        e.appendChild(elem.previousElementSibling)
+                        elem.parentElement.insertBefore(e,elem)
+                        e.appendChild(elem)
+
+                    }
+                }
+
             }
         </script>
     </head>
