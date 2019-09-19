@@ -117,11 +117,8 @@ h6:before {
 .markdown-body .captioned {
     padding-right: 1em;
     padding-left: 1em;
-}
-
-.markdown-body .caption {
-    page-break-inside: avoid;
     margin-bottom: 2em;
+    page-break-inside: avoid;
 }
 
 .markdown-body .caption {
