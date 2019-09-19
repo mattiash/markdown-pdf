@@ -169,7 +169,8 @@ let srv = createHttpServer((req, res) => {
             const content = readFileSync(filename)
             res.writeHead(200, {
                 'Content-Length': Buffer.byteLength(content),
-                'Content-Type': mime.contentType(filename),
+                'Content-Type':
+                    mime.lookup(filename) || 'application/octet-stream',
             })
             res.end(content)
         } catch (e) {
