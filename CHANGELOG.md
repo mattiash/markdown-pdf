@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 -   Avoid linebreaks between a heading and a captioned element.
+-   Adjust margins and footer
 
 ## [1.2.1] 2019-09-19
 

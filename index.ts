@@ -236,15 +236,13 @@ async function run() {
             format: argv.paper as any,
             displayHeaderFooter: true,
             headerTemplate: '<div></div>',
-            //     '<div id="header-template" style="font-size:10px !important; color:#808080; padding-left:10px"><span class="date"></span><span class="title"></span><span class="url"></span><span class="pageNumber"></span><span class="totalPages"></span></div>',
             footerTemplate:
-                '<div id="footer-template" style="padding-bottom: 10px; font-family: Arial, Helvetica, sans-serif; width: 100%; padding-right: 30px; font-size: 8pt !important; text-align: right;" ><span class="pageNumber"></span></div>',
-            // '<div id="footer-template" style="background-color: #aaa; font-size:10px !important; color:#808080; padding-left:10px"><span class="pageNumber"></span></div>',
+                '<div id="footer-template" style="padding-bottom: 5mm; font-family: Roboto, Arial, Helvetica, sans-serif; width: 100%; padding-right: 10mm; font-size: 8pt !important; text-align: right;" ><span class="pageNumber"></span></div>',
             margin: {
-                top: '50px',
-                bottom: '70px',
-                right: '30px',
-                left: '30px',
+                top: '20mm',
+                bottom: '25mm',
+                right: '10mm',
+                left: '10mm',
             },
         })
         await browser.close()
