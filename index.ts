@@ -96,20 +96,16 @@ const md = new Remarkable({
     // Highlighter function. Should return escaped HTML,
     // or '' if the source string is not changed
     highlight: function(str: string, lang: string) {
-        console.log('highlight', lang)
         if (lang && hljs.getLanguage(lang)) {
             try {
-                console.log('known')
                 return hljs.highlight(lang, str).value
             } catch (err) {}
         }
 
         try {
-            console.log('auto')
             return hljs.highlightAuto(str).value
         } catch (err) {}
 
-        console.log('default')
         return '' // use external default escaping
     },
 })
