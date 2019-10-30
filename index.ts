@@ -5,6 +5,7 @@ import * as puppeteer from 'puppeteer'
 import { createHttpServer } from '@mattiash/http'
 import { join, dirname, resolve } from 'path'
 const { Remarkable } = require('remarkable')
+import * as hljs from 'highlight.js'
 const mime = require('mime-types')
 
 import * as yargs from 'yargs'
@@ -73,6 +74,9 @@ markdown = markdown
 
 const printcss = readFileSync(require.resolve('../print.css'))
 const githubcss = readFileSync(require.resolve('github-markdown-css'))
+const highlightcss = readFileSync(
+    require.resolve('highlight.js/styles/github.css'),
+)
 argv.output =
     argv.output === '<inputfile>.pdf' ? absoluteFilename + '.pdf' : argv.output
 
@@ -91,8 +95,22 @@ const md = new Remarkable({
 
     // Highlighter function. Should return escaped HTML,
     // or '' if the source string is not changed
-    highlight: function(/*str, lang*/) {
-        return ''
+    highlight: function(str: string, lang: string) {
+        console.log('highlight', lang)
+        if (lang && hljs.getLanguage(lang)) {
+            try {
+                console.log('known')
+                return hljs.highlight(lang, str).value
+            } catch (err) {}
+        }
+
+        try {
+            console.log('auto')
+            return hljs.highlightAuto(str).value
+        } catch (err) {}
+
+        console.log('default')
+        return '' // use external default escaping
     },
 })
 
@@ -106,6 +124,7 @@ const html = `
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <link rel="stylesheet" href="/@mattiash/markdown-pdf/github-markdown.css">
+        <link rel="stylesheet" href="/@mattiash/markdown-pdf/highlight.css">
         <link rel="stylesheet" href="/@mattiash/markdown-pdf/print.css">
         <link rel="stylesheet" href="/@mattiash/markdown-pdf/style.css">
 
@@ -176,6 +195,9 @@ let srv = createHttpServer((req, res) => {
         switch (file) {
             case 'github-markdown.css':
                 content = githubcss
+                break
+            case 'highlight.css':
+                content = highlightcss
                 break
             case 'print.css':
                 content = printcss

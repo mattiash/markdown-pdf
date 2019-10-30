@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+-   Syntax highlighting for fenced code blocks
+
 ## [1.2.2] 2019-09-19
 
 -   Avoid linebreaks between a heading and a captioned element.
